@@ -20,22 +20,50 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
-// NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
+// S3EtcdBackupConfig defines the configuration of S3EtcdBackup
+type S3EtcdBackupConfig struct {
+	AccessKey  string `json:"accessKey,omitempty" yaml:"accessKey,omitempty"`
+	BucketName string `json:"bucketName,omitempty" yaml:"bucketName,omitempty"`
+	CustomCA   string `json:"customCa,omitempty" yaml:"customCa,omitempty"`
+	Endpoint   string `json:"endpoint,omitempty" yaml:"endpoint,omitempty"`
+	Folder     string `json:"folder,omitempty" yaml:"folder,omitempty"`
+	Region     string `json:"region,omitempty" yaml:"region,omitempty"`
+	SecretKey  string `json:"secretKey,omitempty" yaml:"secretKey,omitempty"`
+}
+
+// EtcdBackupConfig defines the configuration of EtcdBackup
+type EtcdBackupConfig struct {
+	Enabled            *bool               `json:"enabled,omitempty" yaml:"enabled,omitempty"`
+	IntervalHours      int64               `json:"intervalHours,omitempty" yaml:"intervalHours,omitempty"`
+	Retention          int64               `json:"retention,omitempty" yaml:"retention,omitempty"`
+	S3EtcdBackupConfig *S3EtcdBackupConfig `json:"s3EtcdBackupConfig,omitempty" yaml:"s3EtcdBackupConfig,omitempty"`
+	SafeTimestamp      bool                `json:"safeTimestamp,omitempty" yaml:"safeTimestamp,omitempty"`
+	Timeout            int64               `json:"timeout,omitempty" yaml:"timeout,omitempty"`
+}
+
+// EtcdBackupCondition defines the condition of EtcdBackup
+type EtcdBackupCondition struct {
+	LastTransitionTime string `json:"lastTransitionTime,omitempty" yaml:"lastTransitionTime,omitempty"`
+	LastUpdateTime     string `json:"lastUpdateTime,omitempty" yaml:"lastUpdateTime,omitempty"`
+	Message            string `json:"message,omitempty" yaml:"message,omitempty"`
+	Reason             string `json:"reason,omitempty" yaml:"reason,omitempty"`
+	Status             string `json:"status,omitempty" yaml:"status,omitempty"`
+	Type               string `json:"type,omitempty" yaml:"type,omitempty"`
+}
 
 // EtcdBackupSpec defines the desired state of EtcdBackup
 type EtcdBackupSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
-
-	// Foo is an example field of EtcdBackup. Edit etcdbackup_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	EtcdBackupConfig *EtcdBackupConfig `json:"etcdBackupConfig,omitempty" yaml:"etcdBackupConfig,omitempty"`
+	ClusterID        string            `json:"clusterId,omitempty" yaml:"clusterId,omitempty"`
+	Filename         string            `json:"filename,omitempty" yaml:"filename,omitempty"`
+	Manual           bool              `json:"manual,omitempty" yaml:"manual,omitempty"`
 }
 
 // EtcdBackupStatus defines the observed state of EtcdBackup
 type EtcdBackupStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	ClusterObject     string                `json:"clusterObject,omitempty" yaml:"clusterObject,omitempty"`
+	Conditions        []EtcdBackupCondition `json:"conditions,omitempty" yaml:"conditions,omitempty"`
+	KubernetesVersion string                `json:"kubernetesVersion,omitempty" yaml:"kubernetesVersion,omitempty"`
 }
 
 //+kubebuilder:object:root=true
@@ -46,7 +74,9 @@ type EtcdBackup struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   EtcdBackupSpec   `json:"spec,omitempty"`
+	// backup spec
+	Spec EtcdBackupSpec `json:"spec,omitempty"`
+	// backup status
 	Status EtcdBackupStatus `json:"status,omitempty"`
 }
 

@@ -44,13 +44,33 @@ help: ## Display this help.
 
 ##@ Development
 
+.PHONY: generate
+generate:
+	$(MAKE) generate-modules
+	$(MAKE) generate-manifests-api
+	$(MAKE) generate-go-deepcopy
+
+.PHONY: generate-manifests-api
+generate-manifests-api: controller-gen ## Generate WebhookConfiguration, ClusterRole and CustomResourceDefinition objects.
+	$(CONTROLLER_GEN) rbac:roleName=manager-role crd paths="./api/..." \
+			output:crd:artifacts:config=./config/crd/bases \
+			output:rbac:dir=./config/rbac \
+			output:webhook:dir=./config/webhook \
+			webhook
+
+.PHONY: generate-modules
+generate-modules: ## Run go mod tidy to ensure modules are up to date
+	go mod tidy
+
+.PHONY: generate-go-deepcopy
+generate-go-deepcopy:  ## Run deepcopy generation
+	$(CONTROLLER_GEN) \
+		object:headerFile=./hack/boilerplate.go.txt \
+		paths=./api/...
+
 .PHONY: manifests
 manifests: controller-gen ## Generate WebhookConfiguration, ClusterRole and CustomResourceDefinition objects.
-	$(CONTROLLER_GEN) rbac:roleName=manager-role crd webhook paths="./..." output:crd:artifacts:config=config/crd/bases
-
-.PHONY: generate
-generate: controller-gen ## Generate code containing DeepCopy, DeepCopyInto, and DeepCopyObject method implementations.
-	$(CONTROLLER_GEN) object:headerFile="hack/boilerplate.go.txt" paths="./..."
+    $(CONTROLLER_GEN) rbac:roleName=manager-role crd webhook paths="./..." output:crd:artifacts:config=config/crd/bases
 
 .PHONY: fmt
 fmt: ## Run go fmt against code.
