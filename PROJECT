@@ -7,4 +7,14 @@ layout:
 - go.kubebuilder.io/v4
 projectName: turtles-etcd-restore
 repo: github.com/furkatgofurov7/turtles-etcd-restore
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: cattle.io
+  group: turtles-capi
+  kind: EtcdBackup
+  path: github.com/furkatgofurov7/turtles-etcd-restore/api/v1alpha1
+  version: v1alpha1
 version: "3"
