@@ -1,0 +1,9 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: aggregated-manager-role
+aggregationRule:
+  clusterRoleSelectors:
+  - matchLabels:
+      turtles-capi.cattle.io/aggregate-to-manager: "true"
+rules: []

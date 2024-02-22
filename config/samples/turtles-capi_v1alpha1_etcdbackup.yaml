@@ -9,4 +9,6 @@ metadata:
     app.kubernetes.io/created-by: turtles-etcd-restore
   name: etcdbackup-sample
 spec:
-  # TODO(user): Add fields here
+  clusterID: "etcd-cluster"
+  filename: "etcdbackup-sample"
+  manual: true

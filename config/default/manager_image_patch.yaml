@@ -7,4 +7,5 @@ spec:
   template:
     spec:
       containers:
-      - name: manager
+        - image: ghcr.io/furkatgofurov7/turtles-etcd-restore:dev
+          name: manager
