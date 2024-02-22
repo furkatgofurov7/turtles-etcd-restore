@@ -1,0 +1,12 @@
+apiVersion: turtles-capi.cattle.io/v1alpha1
+kind: EtcdBackup
+metadata:
+  labels:
+    app.kubernetes.io/name: etcdbackup
+    app.kubernetes.io/instance: etcdbackup-sample
+    app.kubernetes.io/part-of: turtles-etcd-restore
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: turtles-etcd-restore
+  name: etcdbackup-sample
+spec:
+  # TODO(user): Add fields here
