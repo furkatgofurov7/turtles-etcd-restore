@@ -40,13 +40,13 @@ var _ = Describe("EtcdBackup Controller", func() {
 			Name:      resourceName,
 			Namespace: "default", // TODO(user):Modify as needed
 		}
-		etcdbackup := &etcdv1alpha1.EtcdBackup{}
+		etcdbackup := &etcdv1alpha1.EtcdMachineBackup{}
 
 		BeforeEach(func() {
 			By("creating the custom resource for the Kind EtcdBackup")
 			err := k8sClient.Get(ctx, typeNamespacedName, etcdbackup)
 			if err != nil && errors.IsNotFound(err) {
-				resource := &etcdv1alpha1.EtcdBackup{
+				resource := &etcdv1alpha1.EtcdMachineBackup{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      resourceName,
 						Namespace: "default",
@@ -59,7 +59,7 @@ var _ = Describe("EtcdBackup Controller", func() {
 
 		AfterEach(func() {
 			// TODO(user): Cleanup logic after each test, like removing the resource instance.
-			resource := &etcdv1alpha1.EtcdBackup{}
+			resource := &etcdv1alpha1.EtcdMachineBackup{}
 			err := k8sClient.Get(ctx, typeNamespacedName, resource)
 			Expect(err).NotTo(HaveOccurred())
 

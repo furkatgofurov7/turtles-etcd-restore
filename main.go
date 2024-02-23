@@ -23,7 +23,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/furkatgofurov7/turtles-etcd-restore/controllers"
 	"github.com/furkatgofurov7/turtles-etcd-restore/internal/controller"
 	"github.com/spf13/pflag"
 	corev1 "k8s.io/api/core/v1"
@@ -40,7 +39,9 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/metrics/server"
 
+	backupv1 "github.com/furkatgofurov7/turtles-etcd-restore/api/v1alpha1"
 	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
+	"sigs.k8s.io/cluster-api/controllers/remote"
 )
 
 var (
@@ -68,6 +69,7 @@ func init() {
 	//+kubebuilder:scaffold:scheme
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 	utilruntime.Must(clusterv1.AddToScheme(scheme))
+	utilruntime.Must(backupv1.AddToScheme(scheme))
 }
 
 // initFlags initializes the flags.
@@ -172,8 +174,36 @@ func setupChecks(mgr ctrl.Manager) {
 }
 
 func setupReconcilers(ctx context.Context, mgr ctrl.Manager) {
-	if err := (&controllers.EtcdSnapshotSyncReconciler{
-		Client: mgr.GetClient(),
+	secretCachingClient, err := client.New(mgr.GetConfig(), client.Options{
+		HTTPClient: mgr.GetHTTPClient(),
+		Cache: &client.CacheOptions{
+			Reader: mgr.GetCache(),
+		},
+	})
+	if err != nil {
+		setupLog.Error(err, "unable to create secret caching client")
+		os.Exit(1)
+	}
+
+	// Set up a ClusterCacheTracker and ClusterCacheReconciler to provide to controllers
+	// requiring a connection to a remote cluster
+	tracker, err := remote.NewClusterCacheTracker(
+		mgr,
+		remote.ClusterCacheTrackerOptions{
+			SecretCachingClient: secretCachingClient,
+			ControllerName:      "etcd-restore-controller",
+			Log:                 &ctrl.Log,
+			Indexes:             []remote.Index{remote.NodeProviderIDIndex},
+		},
+	)
+	if err != nil {
+		setupLog.Error(err, "unable to create cluster cache tracker")
+		os.Exit(1)
+	}
+
+	if err := (&controller.EtcdSnapshotSyncReconciler{
+		Client:  mgr.GetClient(),
+		Tracker: tracker,
 	}).SetupWithManager(ctx, mgr); err != nil {
 		setupLog.Error(err, "unable to create EtcdSnapshotSyncReconciler")
 		os.Exit(1)
