@@ -27,7 +27,7 @@ import (
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	turtlescapiv1alpha1 "github.com/furkatgofurov7/turtles-etcd-restore/api/v1alpha1"
+	etcdv1alpha1 "github.com/furkatgofurov7/turtles-etcd-restore/api/v1alpha1"
 )
 
 var _ = Describe("EtcdBackup Controller", func() {
@@ -40,13 +40,13 @@ var _ = Describe("EtcdBackup Controller", func() {
 			Name:      resourceName,
 			Namespace: "default", // TODO(user):Modify as needed
 		}
-		etcdbackup := &turtlescapiv1alpha1.EtcdBackup{}
+		etcdbackup := &etcdv1alpha1.EtcdBackup{}
 
 		BeforeEach(func() {
 			By("creating the custom resource for the Kind EtcdBackup")
 			err := k8sClient.Get(ctx, typeNamespacedName, etcdbackup)
 			if err != nil && errors.IsNotFound(err) {
-				resource := &turtlescapiv1alpha1.EtcdBackup{
+				resource := &etcdv1alpha1.EtcdBackup{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      resourceName,
 						Namespace: "default",
@@ -59,7 +59,7 @@ var _ = Describe("EtcdBackup Controller", func() {
 
 		AfterEach(func() {
 			// TODO(user): Cleanup logic after each test, like removing the resource instance.
-			resource := &turtlescapiv1alpha1.EtcdBackup{}
+			resource := &etcdv1alpha1.EtcdBackup{}
 			err := k8sClient.Get(ctx, typeNamespacedName, resource)
 			Expect(err).NotTo(HaveOccurred())
 
