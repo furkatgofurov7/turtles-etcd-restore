@@ -55,7 +55,7 @@ func (r *EtcdBackupReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 		return ctrl.Result{}, err
 	}
 
-	// Handle deleted remediation
+	// Handle deleted etcdBackup
 	if !etcdBackup.ObjectMeta.DeletionTimestamp.IsZero() {
 		return r.reconcileDelete(ctx, etcdBackup)
 	}
