@@ -18,77 +18,45 @@ package v1alpha1
 
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
 )
 
-// S3EtcdBackupConfig defines the configuration of S3EtcdBackup
-type S3EtcdBackupConfig struct {
-	AccessKey  string `json:"accessKey,omitempty" yaml:"accessKey,omitempty"`
-	BucketName string `json:"bucketName,omitempty" yaml:"bucketName,omitempty"`
-	CustomCA   string `json:"customCa,omitempty" yaml:"customCa,omitempty"`
-	Endpoint   string `json:"endpoint,omitempty" yaml:"endpoint,omitempty"`
-	Folder     string `json:"folder,omitempty" yaml:"folder,omitempty"`
-	Region     string `json:"region,omitempty" yaml:"region,omitempty"`
-	SecretKey  string `json:"secretKey,omitempty" yaml:"secretKey,omitempty"`
+// EtcdMachineBackupSpec defines the desired state of EtcdMachineBackup
+type EtcdMachineBackupSpec struct {
+	ClusterName string `json:"clusterName"`
+	MachineName string `json:"machineName"`
+	Location    string `json:"location"`
+	Manual      bool   `json:"manual"`
 }
 
-// EtcdBackupConfig defines the configuration of EtcdBackup
-type EtcdBackupConfig struct {
-	Enabled            *bool               `json:"enabled,omitempty" yaml:"enabled,omitempty"`
-	IntervalHours      int64               `json:"intervalHours,omitempty" yaml:"intervalHours,omitempty"`
-	Retention          int64               `json:"retention,omitempty" yaml:"retention,omitempty"`
-	S3EtcdBackupConfig *S3EtcdBackupConfig `json:"s3EtcdBackupConfig,omitempty" yaml:"s3EtcdBackupConfig,omitempty"`
-	SafeTimestamp      bool                `json:"safeTimestamp,omitempty" yaml:"safeTimestamp,omitempty"`
-	Timeout            int64               `json:"timeout,omitempty" yaml:"timeout,omitempty"`
-}
-
-// EtcdBackupCondition defines the condition of EtcdBackup
-type EtcdBackupCondition struct {
-	LastTransitionTime string `json:"lastTransitionTime,omitempty" yaml:"lastTransitionTime,omitempty"`
-	LastUpdateTime     string `json:"lastUpdateTime,omitempty" yaml:"lastUpdateTime,omitempty"`
-	Message            string `json:"message,omitempty" yaml:"message,omitempty"`
-	Reason             string `json:"reason,omitempty" yaml:"reason,omitempty"`
-	Status             string `json:"status,omitempty" yaml:"status,omitempty"`
-	Type               string `json:"type,omitempty" yaml:"type,omitempty"`
-}
-
-// EtcdBackupSpec defines the desired state of EtcdBackup
-type EtcdBackupSpec struct {
-	EtcdBackupConfig *EtcdBackupConfig `json:"etcdBackupConfig,omitempty" yaml:"etcdBackupConfig,omitempty"`
-	ClusterID        string            `json:"clusterId,omitempty" yaml:"clusterId,omitempty"`
-	Filename         string            `json:"filename,omitempty" yaml:"filename,omitempty"`
-	Manual           bool              `json:"manual,omitempty" yaml:"manual,omitempty"`
-}
-
-// EtcdBackupStatus defines the observed state of EtcdBackup
-type EtcdBackupStatus struct {
-	ClusterObject     string                `json:"clusterObject,omitempty" yaml:"clusterObject,omitempty"`
-	Conditions        []EtcdBackupCondition `json:"conditions,omitempty" yaml:"conditions,omitempty"`
-	KubernetesVersion string                `json:"kubernetesVersion,omitempty" yaml:"kubernetesVersion,omitempty"`
+// EtcdMachineBackupStatus defines the observed state of EtcdMachineBackup
+type EtcdMachineBackupStatus struct {
+	Conditions clusterv1.Conditions `json:"conditions,omitempty"`
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 
-// EtcdBackup is the Schema for the etcdbackups API
-type EtcdBackup struct {
+// EtcdMachineBackup is the Schema for the EtcdMachineBackups API
+type EtcdMachineBackup struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
 	// backup spec
-	Spec EtcdBackupSpec `json:"spec,omitempty"`
+	Spec EtcdMachineBackupSpec `json:"spec,omitempty"`
 	// backup status
-	Status EtcdBackupStatus `json:"status,omitempty"`
+	Status EtcdMachineBackupStatus `json:"status,omitempty"`
 }
 
 //+kubebuilder:object:root=true
 
-// EtcdBackupList contains a list of EtcdBackup
-type EtcdBackupList struct {
+// EtcdMachineBackupList contains a list of EtcdMachineBackup
+type EtcdMachineBackupList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []EtcdBackup `json:"items"`
+	Items           []EtcdMachineBackup `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&EtcdBackup{}, &EtcdBackupList{})
+	SchemeBuilder.Register(&EtcdMachineBackup{}, &EtcdMachineBackupList{})
 }
