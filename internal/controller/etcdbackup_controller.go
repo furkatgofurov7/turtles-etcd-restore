@@ -36,14 +36,14 @@ type EtcdBackupReconciler struct {
 	Scheme *runtime.Scheme
 }
 
-//+kubebuilder:rbac:groups=turtles-capi.cattle.io,resources=etcdbackups,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=turtles-capi.cattle.io,resources=etcdbackups/status,verbs=get;update;patch
-//+kubebuilder:rbac:groups=turtles-capi.cattle.io,resources=etcdbackups/finalizers,verbs=update
+//+kubebuilder:rbac:groups=turtles-capi.cattle.io,resources=etcdmachinebackups,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=turtles-capi.cattle.io,resources=etcdmachinebackups/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=turtles-capi.cattle.io,resources=etcdmachinebackups/finalizers,verbs=update
 
 func (r *EtcdBackupReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	log := log.FromContext(ctx)
 
-	etcdBackup := &etcdv1alpha1.EtcdBackup{ObjectMeta: metav1.ObjectMeta{
+	etcdBackup := &etcdv1alpha1.EtcdMachineBackup{ObjectMeta: metav1.ObjectMeta{
 		Name:      req.Name,
 		Namespace: req.Namespace,
 	}}
@@ -63,11 +63,11 @@ func (r *EtcdBackupReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 	return r.reconcileNormal(ctx, etcdBackup)
 }
 
-func (r *EtcdBackupReconciler) reconcileNormal(ctx context.Context, etcdBackup *etcdv1alpha1.EtcdBackup) (_ ctrl.Result, err error) {
+func (r *EtcdBackupReconciler) reconcileNormal(ctx context.Context, etcdBackup *etcdv1alpha1.EtcdMachineBackup) (_ ctrl.Result, err error) {
 	return ctrl.Result{}, nil
 }
 
-func (r *EtcdBackupReconciler) reconcileDelete(ctx context.Context, etcdBackup *etcdv1alpha1.EtcdBackup) (ctrl.Result, error) {
+func (r *EtcdBackupReconciler) reconcileDelete(ctx context.Context, etcdBackup *etcdv1alpha1.EtcdMachineBackup) (ctrl.Result, error) {
 
 	return ctrl.Result{}, nil
 }
@@ -75,6 +75,6 @@ func (r *EtcdBackupReconciler) reconcileDelete(ctx context.Context, etcdBackup *
 // SetupWithManager sets up the controller with the Manager.
 func (r *EtcdBackupReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&etcdv1alpha1.EtcdBackup{}).
+		For(&etcdv1alpha1.EtcdMachineBackup{}).
 		Complete(r)
 }
