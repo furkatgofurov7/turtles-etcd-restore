@@ -18,13 +18,16 @@ package controller
 
 import (
 	"context"
+	"fmt"
 
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	turtlescapiv1alpha1 "github.com/furkatgofurov7/turtles-etcd-restore/api/v1alpha1"
+	etcdv1alpha1 "github.com/furkatgofurov7/turtles-etcd-restore/api/v1alpha1"
 )
 
 // EtcdBackupReconciler reconciles a EtcdBackup object
@@ -37,19 +40,34 @@ type EtcdBackupReconciler struct {
 //+kubebuilder:rbac:groups=turtles-capi.cattle.io,resources=etcdbackups/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=turtles-capi.cattle.io,resources=etcdbackups/finalizers,verbs=update
 
-// Reconcile is part of the main kubernetes reconciliation loop which aims to
-// move the current state of the cluster closer to the desired state.
-// TODO(user): Modify the Reconcile function to compare the state specified by
-// the EtcdBackup object against the actual cluster state, and then
-// perform operations to make the cluster state reflect the state specified by
-// the user.
-//
-// For more details, check Reconcile and its Result here:
-// - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.17.0/pkg/reconcile
 func (r *EtcdBackupReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = log.FromContext(ctx)
+	log := log.FromContext(ctx)
 
-	// TODO(user): your logic here
+	etcdBackup := &etcdv1alpha1.EtcdBackup{ObjectMeta: metav1.ObjectMeta{
+		Name:      req.Name,
+		Namespace: req.Namespace,
+	}}
+	if err := r.Client.Get(ctx, req.NamespacedName, etcdBackup); apierrors.IsNotFound(err) {
+		// Object not found, return. Created objects are automatically garbage collected.
+		return ctrl.Result{}, nil
+	} else if err != nil {
+		log.Error(err, fmt.Sprintf("Unable to get EtcdBackup resource: %s", req.String()))
+		return ctrl.Result{}, err
+	}
+
+	// Handle deleted remediation
+	if !etcdBackup.ObjectMeta.DeletionTimestamp.IsZero() {
+		return r.reconcileDelete(ctx, etcdBackup)
+	}
+
+	return r.reconcileNormal(ctx, etcdBackup)
+}
+
+func (r *EtcdBackupReconciler) reconcileNormal(ctx context.Context, etcdBackup *etcdv1alpha1.EtcdBackup) (_ ctrl.Result, err error) {
+	return ctrl.Result{}, nil
+}
+
+func (r *EtcdBackupReconciler) reconcileDelete(ctx context.Context, etcdBackup *etcdv1alpha1.EtcdBackup) (ctrl.Result, error) {
 
 	return ctrl.Result{}, nil
 }
@@ -57,6 +75,6 @@ func (r *EtcdBackupReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 // SetupWithManager sets up the controller with the Manager.
 func (r *EtcdBackupReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&turtlescapiv1alpha1.EtcdBackup{}).
+		For(&etcdv1alpha1.EtcdBackup{}).
 		Complete(r)
 }

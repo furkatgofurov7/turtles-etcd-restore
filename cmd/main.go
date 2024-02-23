@@ -34,7 +34,7 @@ import (
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
-	turtlescapiv1alpha1 "github.com/furkatgofurov7/turtles-etcd-restore/api/v1alpha1"
+	etcdv1alpha1 "github.com/furkatgofurov7/turtles-etcd-restore/api/v1alpha1"
 	"github.com/furkatgofurov7/turtles-etcd-restore/internal/controller"
 	//+kubebuilder:scaffold:imports
 )
@@ -47,7 +47,7 @@ var (
 func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 
-	utilruntime.Must(turtlescapiv1alpha1.AddToScheme(scheme))
+	utilruntime.Must(etcdv1alpha1.AddToScheme(scheme))
 	//+kubebuilder:scaffold:scheme
 }
 

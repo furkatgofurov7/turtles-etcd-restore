@@ -24,6 +24,7 @@ import (
 	"time"
 
 	"github.com/furkatgofurov7/turtles-etcd-restore/controllers"
+	"github.com/furkatgofurov7/turtles-etcd-restore/internal/controller"
 	"github.com/spf13/pflag"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -175,6 +176,12 @@ func setupReconcilers(ctx context.Context, mgr ctrl.Manager) {
 		Client: mgr.GetClient(),
 	}).SetupWithManager(ctx, mgr); err != nil {
 		setupLog.Error(err, "unable to create EtcdSnapshotSyncReconciler")
+		os.Exit(1)
+	}
+	if err := (&controller.EtcdBackupReconciler{
+		Client: mgr.GetClient(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create EtcdBackupReconciler")
 		os.Exit(1)
 	}
 }

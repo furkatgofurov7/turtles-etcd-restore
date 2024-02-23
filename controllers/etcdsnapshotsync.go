@@ -25,8 +25,7 @@ type EtcdSnapshotSyncReconciler struct {
 	controller controller.Controller
 	Tracker    *remote.ClusterCacheTracker
 
-	externalTracker    external.ObjectTracker
-	remoteClientGetter remote.ClusterClientGetter
+	externalTracker external.ObjectTracker
 }
 
 func (r *EtcdSnapshotSyncReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Manager) error {
