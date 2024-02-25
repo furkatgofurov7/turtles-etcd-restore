@@ -7,7 +7,7 @@ rules:
 - apiGroups:
   - turtles-capi.cattle.io
   resources:
-  - etcdbackups
+  - etcdmachinebackups
   verbs:
   - create
   - delete
@@ -19,13 +19,39 @@ rules:
 - apiGroups:
   - turtles-capi.cattle.io
   resources:
-  - etcdbackups/finalizers
+  - etcdmachinebackups/finalizers
   verbs:
   - update
 - apiGroups:
   - turtles-capi.cattle.io
   resources:
-  - etcdbackups/status
+  - etcdmachinebackups/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - turtles-capi.cattle.io
+  resources:
+  - etcdsnapshots
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - turtles-capi.cattle.io
+  resources:
+  - etcdsnapshots/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - turtles-capi.cattle.io
+  resources:
+  - etcdsnapshots/status
   verbs:
   - get
   - patch

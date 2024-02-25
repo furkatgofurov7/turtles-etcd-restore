@@ -30,8 +30,8 @@ import (
 	etcdv1alpha1 "github.com/furkatgofurov7/turtles-etcd-restore/api/v1alpha1"
 )
 
-// EtcdBackupReconciler reconciles a EtcdBackup object
-type EtcdBackupReconciler struct {
+// EtcdMachineBackupReconciler reconciles a EtcdMachineBackup object
+type EtcdMachineBackupReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
 }
@@ -40,40 +40,40 @@ type EtcdBackupReconciler struct {
 //+kubebuilder:rbac:groups=turtles-capi.cattle.io,resources=etcdmachinebackups/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=turtles-capi.cattle.io,resources=etcdmachinebackups/finalizers,verbs=update
 
-func (r *EtcdBackupReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+func (r *EtcdMachineBackupReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	log := log.FromContext(ctx)
 
-	etcdBackup := &etcdv1alpha1.EtcdMachineBackup{ObjectMeta: metav1.ObjectMeta{
+	etcdMachineBackup := &etcdv1alpha1.EtcdMachineBackup{ObjectMeta: metav1.ObjectMeta{
 		Name:      req.Name,
 		Namespace: req.Namespace,
 	}}
-	if err := r.Client.Get(ctx, req.NamespacedName, etcdBackup); apierrors.IsNotFound(err) {
+	if err := r.Client.Get(ctx, req.NamespacedName, etcdMachineBackup); apierrors.IsNotFound(err) {
 		// Object not found, return. Created objects are automatically garbage collected.
 		return ctrl.Result{}, nil
 	} else if err != nil {
-		log.Error(err, fmt.Sprintf("Unable to get EtcdBackup resource: %s", req.String()))
+		log.Error(err, fmt.Sprintf("Unable to get EtcdMachineBackup resource: %s", req.String()))
 		return ctrl.Result{}, err
 	}
 
-	// Handle deleted etcdBackup
-	if !etcdBackup.ObjectMeta.DeletionTimestamp.IsZero() {
-		return r.reconcileDelete(ctx, etcdBackup)
+	// Handle deleted etcdMachineBackup
+	if !etcdMachineBackup.ObjectMeta.DeletionTimestamp.IsZero() {
+		return r.reconcileDelete(ctx, etcdMachineBackup)
 	}
 
-	return r.reconcileNormal(ctx, etcdBackup)
+	return r.reconcileNormal(ctx, etcdMachineBackup)
 }
 
-func (r *EtcdBackupReconciler) reconcileNormal(ctx context.Context, etcdBackup *etcdv1alpha1.EtcdMachineBackup) (_ ctrl.Result, err error) {
+func (r *EtcdMachineBackupReconciler) reconcileNormal(ctx context.Context, etcdMachineBackup *etcdv1alpha1.EtcdMachineBackup) (_ ctrl.Result, err error) {
 	return ctrl.Result{}, nil
 }
 
-func (r *EtcdBackupReconciler) reconcileDelete(ctx context.Context, etcdBackup *etcdv1alpha1.EtcdMachineBackup) (ctrl.Result, error) {
+func (r *EtcdMachineBackupReconciler) reconcileDelete(ctx context.Context, etcdMachineBackup *etcdv1alpha1.EtcdMachineBackup) (ctrl.Result, error) {
 
 	return ctrl.Result{}, nil
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *EtcdBackupReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (r *EtcdMachineBackupReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&etcdv1alpha1.EtcdMachineBackup{}).
 		Complete(r)

@@ -208,10 +208,10 @@ func setupReconcilers(ctx context.Context, mgr ctrl.Manager) {
 		setupLog.Error(err, "unable to create EtcdSnapshotSyncReconciler")
 		os.Exit(1)
 	}
-	if err := (&controller.EtcdBackupReconciler{
+	if err := (&controller.EtcdMachineBackupReconciler{
 		Client: mgr.GetClient(),
 	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create EtcdBackupReconciler")
+		setupLog.Error(err, "unable to create EtcdMachineBackupReconciler")
 		os.Exit(1)
 	}
 	if err := (&controller.EtcdSnapshotReconciler{

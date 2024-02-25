@@ -1,14 +1,15 @@
 apiVersion: turtles-capi.cattle.io/v1alpha1
-kind: EtcdBackup
+kind: EtcdMachineBackup
 metadata:
   labels:
-    app.kubernetes.io/name: etcdbackup
-    app.kubernetes.io/instance: etcdbackup-sample
+    app.kubernetes.io/name: etcdmachinebackup
+    app.kubernetes.io/instance: etcdmachinebackup-sample
     app.kubernetes.io/part-of: turtles-etcd-restore
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/created-by: turtles-etcd-restore
-  name: etcdbackup-sample
+  name: etcdmachinebackup-sample
 spec:
-  clusterID: "etcd-cluster"
-  filename: "etcdbackup-sample"
+  clusterName: "etcd-cluster"
+  machineName: "etcd-machine"
+  location: "etcdmachinebackup-location"
   manual: true
