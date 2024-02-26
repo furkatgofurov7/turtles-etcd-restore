@@ -1,4 +1,4 @@
 ## Append samples of your project ##
 resources:
-- turtles-capi_v1alpha1_etcdbackup.yaml
+- turtles-capi_v1alpha1_etcdmachinebackup.yaml
 #+kubebuilder:scaffold:manifestskustomizesamples

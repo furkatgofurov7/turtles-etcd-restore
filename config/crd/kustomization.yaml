@@ -2,7 +2,7 @@
 # since it depends on service name and namespace that are out of this kustomize package.
 # It should be run by config/default
 resources:
-- bases/turtles-capi.cattle.io_etcdbackups.yaml
+- bases/turtles-capi.cattle.io_etcdmachinebackups.yaml
 #+kubebuilder:scaffold:crdkustomizeresource
 
 # [WEBHOOK] To enable webhook, uncomment all the sections with [WEBHOOK] prefix.
@@ -12,13 +12,13 @@ resources:
 # [CERTMANAGER] To enable cert-manager, uncomment all the sections with [CERTMANAGER] prefix.
 # patches here are for enabling the CA injection for each CRD
 patches:
-# - path: patches/webhook_in_etcdbackups.yaml
+# - path: patches/webhook_in_etcdmachinebackups.yaml
 - target:
     group: apiextensions.k8s.io
     version: v1
     kind: CustomResourceDefinition
-    name: etcdbackups.turtles-capi.cattle.io
-  path: patches/turtles-capi.cattle.io_etcdbackups.yaml
+    name: etcdmachinebackups.turtles-capi.cattle.io
+  path: patches/turtles-capi.cattle.io_etcdmachinebackups.yaml
 #+kubebuilder:scaffold:crdkustomizecainjectionpatch
 
 # [WEBHOOK] To enable webhook, uncomment the following section

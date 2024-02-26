@@ -30,51 +30,51 @@ import (
 	etcdv1alpha1 "github.com/furkatgofurov7/turtles-etcd-restore/api/v1alpha1"
 )
 
-// EtcdBackupReconciler reconciles a EtcdBackup object
-type EtcdBackupReconciler struct {
+// EtcdSnapshotReconciler reconciles a EtcdSnapshot object
+type EtcdSnapshotReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
 }
 
-//+kubebuilder:rbac:groups=turtles-capi.cattle.io,resources=etcdmachinebackups,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=turtles-capi.cattle.io,resources=etcdmachinebackups/status,verbs=get;update;patch
-//+kubebuilder:rbac:groups=turtles-capi.cattle.io,resources=etcdmachinebackups/finalizers,verbs=update
+//+kubebuilder:rbac:groups=turtles-capi.cattle.io,resources=etcdsnapshots,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=turtles-capi.cattle.io,resources=etcdsnapshots/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=turtles-capi.cattle.io,resources=etcdsnapshots/finalizers,verbs=update
 
-func (r *EtcdBackupReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+func (r *EtcdSnapshotReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	log := log.FromContext(ctx)
 
-	etcdBackup := &etcdv1alpha1.EtcdMachineBackup{ObjectMeta: metav1.ObjectMeta{
+	etcdSnapshot := &etcdv1alpha1.ETCDSnapshot{ObjectMeta: metav1.ObjectMeta{
 		Name:      req.Name,
 		Namespace: req.Namespace,
 	}}
-	if err := r.Client.Get(ctx, req.NamespacedName, etcdBackup); apierrors.IsNotFound(err) {
+	if err := r.Client.Get(ctx, req.NamespacedName, etcdSnapshot); apierrors.IsNotFound(err) {
 		// Object not found, return. Created objects are automatically garbage collected.
 		return ctrl.Result{}, nil
 	} else if err != nil {
-		log.Error(err, fmt.Sprintf("Unable to get EtcdBackup resource: %s", req.String()))
+		log.Error(err, fmt.Sprintf("Unable to get EtcdSnapshot resource: %s", req.String()))
 		return ctrl.Result{}, err
 	}
 
-	// Handle deleted etcdBackup
-	if !etcdBackup.ObjectMeta.DeletionTimestamp.IsZero() {
-		return r.reconcileDelete(ctx, etcdBackup)
+	// Handle deleted etcdSnapshot
+	if !etcdSnapshot.ObjectMeta.DeletionTimestamp.IsZero() {
+		return r.reconcileDelete(ctx, etcdSnapshot)
 	}
 
-	return r.reconcileNormal(ctx, etcdBackup)
+	return r.reconcileNormal(ctx, etcdSnapshot)
 }
 
-func (r *EtcdBackupReconciler) reconcileNormal(ctx context.Context, etcdBackup *etcdv1alpha1.EtcdMachineBackup) (_ ctrl.Result, err error) {
+func (r *EtcdSnapshotReconciler) reconcileNormal(ctx context.Context, etcdSnapshot *etcdv1alpha1.ETCDSnapshot) (_ ctrl.Result, err error) {
 	return ctrl.Result{}, nil
 }
 
-func (r *EtcdBackupReconciler) reconcileDelete(ctx context.Context, etcdBackup *etcdv1alpha1.EtcdMachineBackup) (ctrl.Result, error) {
+func (r *EtcdSnapshotReconciler) reconcileDelete(ctx context.Context, etcdSnapshot *etcdv1alpha1.ETCDSnapshot) (ctrl.Result, error) {
 
 	return ctrl.Result{}, nil
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *EtcdBackupReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (r *EtcdSnapshotReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&etcdv1alpha1.EtcdMachineBackup{}).
+		For(&etcdv1alpha1.ETCDSnapshot{}).
 		Complete(r)
 }

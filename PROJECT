@@ -14,7 +14,7 @@ resources:
   controller: true
   domain: cattle.io
   group: turtles-capi
-  kind: EtcdBackup
+  kind: EtcdMachineBackup
   path: github.com/furkatgofurov7/turtles-etcd-restore/api/v1alpha1
   version: v1alpha1
 version: "3"

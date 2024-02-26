@@ -126,7 +126,7 @@ func (r *EtcdSnapshotSyncReconciler) Reconcile(ctx context.Context, req ctrl.Req
 			continue
 		}
 
-		etcdBackup := &backupv1.EtcdMachineBackup{
+		etcdMachineBackup := &backupv1.EtcdMachineBackup{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      snapshotName,
 				Namespace: cluster.Namespace,
@@ -138,7 +138,7 @@ func (r *EtcdSnapshotSyncReconciler) Reconcile(ctx context.Context, req ctrl.Req
 			},
 		}
 
-		if err := r.Client.Create(ctx, etcdBackup); err != nil {
+		if err := r.Client.Create(ctx, etcdMachineBackup); err != nil {
 			if apierrors.IsAlreadyExists(err) {
 				log.Info("EtcdMachineBackup already exists, skipping")
 				continue

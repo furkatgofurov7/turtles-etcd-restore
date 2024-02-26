@@ -30,7 +30,7 @@ import (
 	etcdv1alpha1 "github.com/furkatgofurov7/turtles-etcd-restore/api/v1alpha1"
 )
 
-var _ = Describe("EtcdBackup Controller", func() {
+var _ = Describe("EtcdMachineBackup Controller", func() {
 	Context("When reconciling a resource", func() {
 		const resourceName = "test-resource"
 
@@ -40,11 +40,11 @@ var _ = Describe("EtcdBackup Controller", func() {
 			Name:      resourceName,
 			Namespace: "default", // TODO(user):Modify as needed
 		}
-		etcdbackup := &etcdv1alpha1.EtcdMachineBackup{}
+		etcdMachinebackup := &etcdv1alpha1.EtcdMachineBackup{}
 
 		BeforeEach(func() {
-			By("creating the custom resource for the Kind EtcdBackup")
-			err := k8sClient.Get(ctx, typeNamespacedName, etcdbackup)
+			By("creating the custom resource for the Kind EtcdMachineBackup")
+			err := k8sClient.Get(ctx, typeNamespacedName, etcdMachinebackup)
 			if err != nil && errors.IsNotFound(err) {
 				resource := &etcdv1alpha1.EtcdMachineBackup{
 					ObjectMeta: metav1.ObjectMeta{
@@ -63,12 +63,12 @@ var _ = Describe("EtcdBackup Controller", func() {
 			err := k8sClient.Get(ctx, typeNamespacedName, resource)
 			Expect(err).NotTo(HaveOccurred())
 
-			By("Cleanup the specific resource instance EtcdBackup")
+			By("Cleanup the specific resource instance EtcdMachineBackup")
 			Expect(k8sClient.Delete(ctx, resource)).To(Succeed())
 		})
 		It("should successfully reconcile the resource", func() {
 			By("Reconciling the created resource")
-			controllerReconciler := &EtcdBackupReconciler{
+			controllerReconciler := &EtcdMachineBackupReconciler{
 				Client: k8sClient,
 				Scheme: k8sClient.Scheme(),
 			}
