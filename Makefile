@@ -200,6 +200,9 @@ build-kustomize: $(KUSTOMIZE)
 	# Build crd and default kustomize overlays
 	$(KUSTOMIZE) build config/default
 
+.PHOHY: dev-env
+dev-env: ## Create a local development environment
+	./scripts/etcd-backup-restore-dev.sh ${SSH_KEY}
 
 .PHONY: controller-gen
 controller-gen: $(CONTROLLER_GEN) ## Download controller-gen locally if necessary.
@@ -229,3 +232,12 @@ GOBIN=$(LOCALBIN) go install $${package} ;\
 mv "$$(echo "$(1)" | sed "s/-$(3)$$//")" $(1) ;\
 }
 endef
+
+## --------------------------------------
+## Cleanup / Verification
+## --------------------------------------
+
+.PHOHY: clean-dev-env
+clean-dev-env: ## Cleanup generated files and remove the dev env
+	cd examples && rm rke2-aws-cluster-applied.yaml aws-provider-applied.yaml
+	kind delete cluster --name=etcd-backup-restore-cluster

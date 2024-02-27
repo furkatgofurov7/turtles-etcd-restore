@@ -26,3 +26,7 @@ go.work
 *.swp
 *.swo
 *~
+.tiltbuild/
+tilt-settings.json
+aws-provider-applied.yaml
+rke2-aws-cluster-applied.yaml
