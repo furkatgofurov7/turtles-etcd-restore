@@ -18,7 +18,7 @@ package v1alpha1
 
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	runtime "k8s.io/apimachinery/pkg/runtime"
+	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
 )
 
 // ETCDSnapshotPhase is a string representation of the phase of the etcd snapshot
@@ -45,28 +45,14 @@ const (
 	ETCDSnapshotPhaseFailed ETCDSnapshotPhase = "Failed"
 )
 
-// ETCDSnapshotCreate defines the desired state of ETCDSnapshotCreate
-type ETCDSnapshotCreate struct {
-	// Changing the Generation is the only thing required to initiate a snapshot creation.
-	Generation int `json:"generation,omitempty"`
-}
+//+kubebuilder:object:root=true
+//+kubebuilder:subresource:status
 
-// ETCDSnapshotRestore defines the desired state of ETCDSnapshotRestore
+// ETCDSnapshotRestore is the Schema for the ETCDSnapshots API
 type ETCDSnapshotRestore struct {
-	// Name refers to the name of the associated etcdsnapshot object
-	Name string `json:"name,omitempty"`
-	// Changing the Generation is the only thing required to initiate a snapshot restore.
-	Generation int `json:"generation,omitempty"`
-	// Set to either none (or empty string), all, or kubernetesVersion
-	RestoreRKEConfig string `json:"restoreRKEConfig,omitempty"`
-}
-
-// ETCDSnapshot is the Schema for the ETCDSnapshots API
-type ETCDSnapshot struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 	Spec              ETCDSnapshotSpec   `json:"spec,omitempty"`
-	SnapshotFile      ETCDSnapshotFile   `json:"snapshotFile,omitempty"`
 	Status            ETCDSnapshotStatus `json:"status"`
 }
 
@@ -75,47 +61,20 @@ type ETCDSnapshotSpec struct {
 	ClusterName string `json:"clusterName,omitempty"`
 }
 
-// ETCDSnapshotFile defines the desired state of ETCDSnapshotFile
-type ETCDSnapshotFile struct {
-	// Name is the name of the snapshot file
-	Name string `json:"name,omitempty"`
-	// NodeName is the name of the node where the snapshot was taken
-	NodeName string `json:"nodeName,omitempty"`
-	// Location is the location of the snapshot file
-	Location string `json:"location,omitempty"`
-	// Metadata is the metadata of the snapshot file
-	Metadata string `json:"metadata,omitempty"`
-	// CreatedAt is the time when the snapshot was created
-	CreatedAt *metav1.Time `json:"createdAt,omitempty"`
-	// Size is the size of the snapshot file
-	Size int64 `json:"size,omitempty"`
-	// Status is the status of the snapshot file
-	Status string `json:"status,omitempty"`
-	// Message is the message of the snapshot file
-	Message string `json:"message,omitempty"`
-}
-
 // ETCDSnapshotStatus defines the observed state of ETCDSnapshot
 type ETCDSnapshotStatus struct {
-	// Missing is true if the snapshot is missing
-	Missing bool `json:"missing"`
+	Conditions clusterv1.Conditions `json:"conditions,omitempty"`
 }
+
+//+kubebuilder:object:root=true
 
 // ETCDSnapshotList contains a list of ETCDSnapshot
-type ETCDSnapshotList struct {
+type ETCDSnapshotRestoreList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []ETCDSnapshot `json:"items"`
-}
-
-func (e *ETCDSnapshot) DeepCopyObject() runtime.Object {
-	return e.DeepCopy()
-}
-
-func (e *ETCDSnapshotList) DeepCopyObject() runtime.Object {
-	return e.DeepCopy()
+	Items           []ETCDSnapshotRestore `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&ETCDSnapshot{}, &ETCDSnapshotList{})
+	SchemeBuilder.Register(&ETCDSnapshotRestore{}, &ETCDSnapshotRestoreList{})
 }
