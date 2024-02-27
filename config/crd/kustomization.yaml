@@ -3,6 +3,7 @@
 # It should be run by config/default
 resources:
 - bases/turtles-capi.cattle.io_etcdmachinebackups.yaml
+- bases/turtles-capi.cattle.io_etcdsnapshotrestores.yaml
 #+kubebuilder:scaffold:crdkustomizeresource
 
 # [WEBHOOK] To enable webhook, uncomment all the sections with [WEBHOOK] prefix.
@@ -19,6 +20,12 @@ patches:
     kind: CustomResourceDefinition
     name: etcdmachinebackups.turtles-capi.cattle.io
   path: patches/turtles-capi.cattle.io_etcdmachinebackups.yaml
+- target:
+    group: apiextensions.k8s.io
+    version: v1
+    kind: CustomResourceDefinition
+    name: etcdsnapshotrestores.turtles-capi.cattle.io
+  path: patches/turtles-capi.cattle.io_etcdsnapshotrestores.yaml
 #+kubebuilder:scaffold:crdkustomizecainjectionpatch
 
 # [WEBHOOK] To enable webhook, uncomment the following section
