@@ -36,14 +36,19 @@ type EtcdSnapshotReconciler struct {
 	Scheme *runtime.Scheme
 }
 
-//+kubebuilder:rbac:groups=turtles-capi.cattle.io,resources=etcdsnapshots,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=turtles-capi.cattle.io,resources=etcdsnapshots/status,verbs=get;update;patch
-//+kubebuilder:rbac:groups=turtles-capi.cattle.io,resources=etcdsnapshots/finalizers,verbs=update
+//+kubebuilder:rbac:groups=turtles-capi.cattle.io,resources=etcdsnapshotrestores,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=turtles-capi.cattle.io,resources=etcdsnapshotrestores/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=turtles-capi.cattle.io,resources=etcdsnapshotrestores/finalizers,verbs=update
+//+kubebuilder:rbac:groups=cluster.x-k8s.io,resources=clusters,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups="",resources=secrets;events;configmaps;serviceaccounts,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups="rbac.authorization.k8s.io",resources=roles;rolebindings,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups="management.cattle.io",resources=*,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=bootstrap.cluster.x-k8s.io,resources=rke2configs;rke2configs/status;rke2configs/finalizers,verbs=get;list;watch;create;update;patch;delete
 
 func (r *EtcdSnapshotReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	log := log.FromContext(ctx)
 
-	etcdSnapshot := &etcdv1alpha1.ETCDSnapshot{ObjectMeta: metav1.ObjectMeta{
+	etcdSnapshot := &etcdv1alpha1.ETCDSnapshotRestore{ObjectMeta: metav1.ObjectMeta{
 		Name:      req.Name,
 		Namespace: req.Namespace,
 	}}
@@ -63,11 +68,11 @@ func (r *EtcdSnapshotReconciler) Reconcile(ctx context.Context, req ctrl.Request
 	return r.reconcileNormal(ctx, etcdSnapshot)
 }
 
-func (r *EtcdSnapshotReconciler) reconcileNormal(ctx context.Context, etcdSnapshot *etcdv1alpha1.ETCDSnapshot) (_ ctrl.Result, err error) {
+func (r *EtcdSnapshotReconciler) reconcileNormal(ctx context.Context, etcdSnapshot *etcdv1alpha1.ETCDSnapshotRestore) (_ ctrl.Result, err error) {
 	return ctrl.Result{}, nil
 }
 
-func (r *EtcdSnapshotReconciler) reconcileDelete(ctx context.Context, etcdSnapshot *etcdv1alpha1.ETCDSnapshot) (ctrl.Result, error) {
+func (r *EtcdSnapshotReconciler) reconcileDelete(ctx context.Context, etcdSnapshot *etcdv1alpha1.ETCDSnapshotRestore) (ctrl.Result, error) {
 
 	return ctrl.Result{}, nil
 }
@@ -75,6 +80,6 @@ func (r *EtcdSnapshotReconciler) reconcileDelete(ctx context.Context, etcdSnapsh
 // SetupWithManager sets up the controller with the Manager.
 func (r *EtcdSnapshotReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&etcdv1alpha1.ETCDSnapshot{}).
+		For(&etcdv1alpha1.ETCDSnapshotRestore{}).
 		Complete(r)
 }
