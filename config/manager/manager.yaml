@@ -36,10 +36,14 @@ spec:
         - containerPort: 9440
           name: healthz
           protocol: TCP
-        readinessProbe:
-          httpGet:
-            path: /readyz
-            port: healthz
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - "ALL"
+          privileged: false
+          runAsUser: 65532
+          runAsGroup: 65532
         livenessProbe:
           httpGet:
             path: /healthz
