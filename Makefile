@@ -239,5 +239,6 @@ endef
 
 .PHOHY: clean-dev-env
 clean-dev-env: ## Cleanup generated files and remove the dev env
-	cd examples && rm rke2-aws-cluster-applied.yaml aws-provider-applied.yaml
+	cd examples && rm rke2-aws-cluster-applied.yaml aws-provider-applied.yaml || true
+	kubectl delete cluster rke2-aws-cluster -n example-aws || true
 	kind delete cluster --name=etcd-backup-restore-cluster

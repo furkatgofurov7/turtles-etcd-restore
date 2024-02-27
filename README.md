@@ -2,13 +2,13 @@
 
 ## Setting up the environment
 
-To set up the environment, navigate to the root of the repository and run the `make dev-env` command.
+To set up the environment, navigate to the root of the repository and run:
 
 ```bash
     make dev-env SSH_KEY="yourkeyname"
 ```
 
-The `Makefile` target `dev-env` sets up the environment by executing the `scripts/etcd-backup-restore-dev.sh` 
+The `Makefile` target sets up the environment by executing the `scripts/etcd-backup-restore-dev.sh` 
 script with the `SSH_KEY` argument. Under the hood, it performs the following steps:
 
 1. Creates a kind cluster.

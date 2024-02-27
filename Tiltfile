@@ -46,6 +46,7 @@ projects = {
             "go.mod",
             "go.sum",
             "internal/controller",
+            "internal/webhook",
         ],
         "kustomize_dir": "config/default",
         "label": "etcd-restore"
