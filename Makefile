@@ -54,6 +54,7 @@ generate:
 generate-manifests-api: controller-gen ## Generate WebhookConfiguration, ClusterRole and CustomResourceDefinition objects.
 	$(CONTROLLER_GEN) rbac:roleName=manager-role crd paths="./api/..." \
 			paths=./internal/controller/... \
+			paths=./internal/webhook/... \
 			output:crd:artifacts:config=./config/crd/bases \
 			output:rbac:dir=./config/rbac \
 			output:webhook:dir=./config/webhook \

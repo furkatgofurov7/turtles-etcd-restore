@@ -5,6 +5,72 @@ metadata:
   name: manager-role
 rules:
 - apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - events
+  - secrets
+  - serviceaccounts
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - bootstrap.cluster.x-k8s.io
+  resources:
+  - rke2configs
+  - rke2configs/finalizers
+  - rke2configs/status
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - cluster.x-k8s.io
+  resources:
+  - clusters
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - management.cattle.io
+  resources:
+  - '*'
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - rolebindings
+  - roles
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
   - turtles-capi.cattle.io
   resources:
   - etcdmachinebackups
@@ -33,7 +99,7 @@ rules:
 - apiGroups:
   - turtles-capi.cattle.io
   resources:
-  - etcdsnapshots
+  - etcdsnapshotrestores
   verbs:
   - create
   - delete
@@ -45,13 +111,13 @@ rules:
 - apiGroups:
   - turtles-capi.cattle.io
   resources:
-  - etcdsnapshots/finalizers
+  - etcdsnapshotrestores/finalizers
   verbs:
   - update
 - apiGroups:
   - turtles-capi.cattle.io
   resources:
-  - etcdsnapshots/status
+  - etcdsnapshotrestores/status
   verbs:
   - get
   - patch
