@@ -11,6 +11,10 @@ else
 GOBIN=$(shell go env GOBIN)
 endif
 
+## vars
+CLUSTER_NAME ?= $(shell source ./scripts/vars.sh; echo $$CLUSTER_NAME)
+CLUSTER_NAMESPACE ?= $(shell source ./scripts/vars.sh; echo $$CLUSTER_NAMESPACE)
+
 # CONTAINER_TOOL defines the container tool to be used for building images.
 # Be aware that the target commands are only tested with Docker which is
 # scaffolded by default. However, you might want to replace it to use other
@@ -240,5 +244,5 @@ endef
 .PHOHY: clean-dev-env
 clean-dev-env: ## Cleanup generated files and remove the dev env
 	cd examples && rm rke2-aws-cluster-applied.yaml aws-provider-applied.yaml || true
-	kubectl delete cluster rke2-aws-cluster -n example-aws || true
+	kubectl delete cluster $(CLUSTER_NAME) -n $(CLUSTER_NAMESPACE) || true
 	kind delete cluster --name=etcd-backup-restore-cluster

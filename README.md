@@ -17,6 +17,26 @@ script with the `SSH_KEY` argument. Under the hood, it performs the following st
 4. Deploys AWS provider (`examples/aws-provider.yaml`).
 5. Deploys RKE2 Cluster in AWS (`examples/rke2-aws-cluster.yaml`).
 
+To have a fully working setup, it is a pre-requisite for system agent installation
+to configure a rancher server URL. To configure it, we need to access the Rancher UI by
+opening 2 separate new terminals:
+
+1. In the first terminal run:
+
+```bash
+    kubectl port-forward --namespace cattle-system svc/rancher 10000:443
+```
+
+2. In the second terminal:
+
+```bash
+    ngrok http https://localhost:10000
+```
+
+Follow the auto-generated link from second terminal to access the UI.
+
+## Cleanup
+
 To clean up the environment, run the following command from the root of the repo:
 
 ```bash

@@ -23,6 +23,9 @@ fi
 REPO_ROOT=$(git rev-parse --show-toplevel)
 BASEDIR=$(dirname "$0")
 
+source "$BASEDIR/vars.sh"
+
+CERT_MANAGER_VERSION=${CERT_MANAGER_VERSION:-v1.12.3}
 RANCHER_HOSTNAME=${RANCHER_HOSTNAME:-my.hostname.dev}
 RANCHER_VERSION=${RANCHER_VERSION:-v2.7.9}
 RANCHER_TURTLES_VERSION=${RANCHER_TURTLES_VERSION:-v0.5.0}
@@ -31,8 +34,6 @@ CAPI_OPERATOR_VERSION=${CAPI_OPERATOR_VERSION:-v0.9.0}
 export EXP_CLUSTER_RESOURCE_SET=true
 export CLUSTER_TOPOLOGY=true
 export SSH_KEY=${1#*=}
-export CLUSTER_NAME="rke2-aws-cluster"
-export AWS_REGION="us-west-2"
 
 kind create cluster --config "$BASEDIR/kind-cluster-with-extramounts.yaml"
 
@@ -47,7 +48,7 @@ helm repo update
 helm install cert-manager jetstack/cert-manager \
     --namespace cert-manager \
     --create-namespace \
-    --version v1.12.3 \
+    --version="$CERT_MANAGER_VERSION" \
     --set installCRDs=true \
     --wait
 
