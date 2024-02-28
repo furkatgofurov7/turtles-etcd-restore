@@ -26,7 +26,7 @@ import (
 	backupv1 "github.com/furkatgofurov7/turtles-etcd-restore/api/v1alpha1"
 	"github.com/furkatgofurov7/turtles-etcd-restore/internal/controller"
 	"github.com/furkatgofurov7/turtles-etcd-restore/internal/webhook"
-	bootstrapv1 "github.com/rancher-sandbox/cluster-api-provider-rke2/bootstrap/api/v1beta1"
+	bootstrapv1 "github.com/rancher-sandbox/cluster-api-provider-rke2/bootstrap/api/v1alpha1"
 	"github.com/spf13/pflag"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
