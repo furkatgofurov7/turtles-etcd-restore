@@ -110,6 +110,8 @@ envsubst < aws-provider.yaml > aws-provider-applied.yaml
 kubectl apply -f aws-provider-applied.yaml
 sleep 20
 
+# Check if the AWS CRDs are installed before moving on
+kubectl get crd awsclusters.infrastructure.cluster.x-k8s.io awsmachinetemplates.infrastructure.cluster.x-k8s.io awsclustercontrolleridentities.infrastructure.cluster.x-k8s.io > /dev/null 2>&1 || { echo "One or more required CRDs are not installed"; exit 1; }
 kubectl rollout status deployment capa-controller-manager -n capa-system --timeout=180s
 
 # Deploy RKE2 Cluster in AWS

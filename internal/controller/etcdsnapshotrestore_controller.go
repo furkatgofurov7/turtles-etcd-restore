@@ -20,20 +20,40 @@ import (
 	"context"
 	"fmt"
 
+	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	etcdv1alpha1 "github.com/furkatgofurov7/turtles-etcd-restore/api/v1alpha1"
+	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
 )
 
 // EtcdSnapshotReconciler reconciles a EtcdSnapshot object
 type EtcdSnapshotReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
+}
+
+// scope holds the different objects that are read and used during the reconcile.
+type scope struct {
+	// cluster is the Cluster object the Machine belongs to.
+	// It is set at the beginning of the reconcile function.
+	cluster *clusterv1.Cluster
+
+	// machine is the Machine object. It is set at the beginning
+	// of the reconcile function.
+	machine *clusterv1.Machine
+
+	// secret is the Secret object.
+	secret *corev1.Secret
+
+	// etcdmachinebackup is the EtcdMachineBackup object.
+	etcdmachinebackup *etcdv1alpha1.EtcdMachineBackup
 }
 
 //+kubebuilder:rbac:groups=turtles-capi.cattle.io,resources=etcdsnapshotrestores,verbs=get;list;watch;create;update;patch;delete
@@ -84,3 +104,63 @@ func (r *EtcdSnapshotReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		For(&etcdv1alpha1.ETCDSnapshotRestore{}).
 		Complete(r)
 }
+
+// getClusters returns the list of clusters from the given list of objects.
+func getClusters(objs []*unstructured.Unstructured) []*unstructured.Unstructured {
+	res := make([]*unstructured.Unstructured, 0)
+	for _, obj := range objs {
+		if obj.GroupVersionKind() == clusterv1.GroupVersion.WithKind("Cluster") {
+			res = append(res, obj)
+		}
+	}
+	return res
+}
+
+// getEtcdMachineBackup returns the name of the EtcdMachineBackup object for the given machine.
+func getEtcdMachineBackup(ctx context.Context, cl client.Client, cluster *clusterv1.Cluster, nodeName string) (string, error) {
+	etcdMachineBackupList := &etcdv1alpha1.EtcdMachineBackupList{}
+	if err := cl.List(ctx, etcdMachineBackupList, client.InNamespace(cluster.Namespace)); err != nil {
+		return "", fmt.Errorf("failed to list etcd machine backups: %w", err)
+	}
+
+	for _, etcdMachineBackup := range etcdMachineBackupList.Items {
+		if etcdMachineBackup.Spec.ClusterName == cluster.Name {
+			if etcdMachineBackup.Spec.MachineName == nodeName {
+				return etcdMachineBackup.Name, nil
+			}
+		}
+	}
+	return "", nil
+}
+
+// getAllMachinesInCluster returns all the machines in the cluster.
+func getAllMachinesInCluster(ctx context.Context, c client.Client, namespace, clusterName string) (*clusterv1.MachineList, error) {
+	if clusterName == "" {
+		return nil, nil
+	}
+
+	machineList := &clusterv1.MachineList{}
+	labels := map[string]string{clusterv1.ClusterNameLabel: clusterName}
+
+	if err := c.List(ctx, machineList, client.InNamespace(namespace), client.MatchingLabels(labels)); err != nil {
+		return nil, err
+	}
+
+	return machineList, nil
+}
+
+// getSecret returns the secret object for the given namespace and clusterName.
+// func (ctx context.Context, c client.Client, namespace, clusterName string) getSecret() (*corev1.Secret, error) {
+// 	secret := corev1.Secret{}
+// 	if err, machines := getAllMachinesInCluster(ctx, с, clusterName); err != nil {
+
+// 		return nil, fmt.Errorf("failed to list machines: %w", err)
+// 	}
+// 	if err := c.List(ctx, clusterv1.MachineList, client.InNamespace(cluster.Namespace)); err != nil {
+// 		return "", fmt.Errorf("failed to list etcd machine backups: %w", err)
+// 	}
+// 	for _, machine := range machines.Items {
+
+// 	}
+// 	return secret
+// }

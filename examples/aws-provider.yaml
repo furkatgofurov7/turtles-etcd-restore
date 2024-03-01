@@ -18,5 +18,6 @@ metadata:
  name: aws
  namespace: capa-system
 spec:
+ version: v2.3.5
  configSecret:
    name: capa-variables
