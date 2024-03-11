@@ -311,6 +311,7 @@ func (r *EtcdSnapshotReconciler) restoreSnaphotOnInitMachine(ctx context.Context
 
 	// Get the etcd restore instructions
 	instructions, err := instructionsAsJson([]OneTimeInstruction{
+		removeServerUrlFromConfig(),
 		manifestRemovalInstruction(),
 		etcdRestoreInstruction(scope.etcdmachinebackup),
 	})
@@ -353,8 +354,10 @@ func (r *EtcdSnapshotReconciler) startRKE2OnAllMachines(ctx context.Context, sco
 	log := log.FromContext(ctx)
 
 	// Start from the init machine.
-
-	log.Info("Starting RKE2 on init machine", "machine", scope.initMachine.Name)
+	initMachineIP := getInternalMachineIP(scope.initMachine)
+	if initMachineIP == "" {
+		return ctrl.Result{}, fmt.Errorf("failed to get internal machine IP, field is empty")
+	}
 
 	planSecret, err := getPlanSecretForMachine(ctx, r.Client, scope.initMachine)
 	if err != nil {
@@ -374,6 +377,7 @@ func (r *EtcdSnapshotReconciler) startRKE2OnAllMachines(ctx context.Context, sco
 	// Check if appliedPlan is equal to the rke2 start instruction, if not requeue and wait until it is applied.
 	// TODO: Handle plan failure.
 	if !isPlanApplied(startRKE2InstructionInit, planSecret.Data["applied-checksum"]) {
+		log.Info("Starting RKE2 on init machine", "machine", scope.initMachine.Name)
 		log.Info("Plan not applied yet", "machine", scope.initMachine.Name)
 		return ctrl.Result{RequeueAfter: 30 * time.Second}, nil
 	}
@@ -397,6 +401,8 @@ func (r *EtcdSnapshotReconciler) startRKE2OnAllMachines(ctx context.Context, sco
 		log.Info("Starting RKE2 on machine", "machine", machine.Name)
 
 		startRKE2Instructions, err := instructionsAsJson([]OneTimeInstruction{
+			removeServerUrlFromConfig(),
+			addServerUrlToConfig(initMachineIP),
 			removeEtcdDataInstruction(),
 			manifestRemovalInstruction(),
 			startRKE2Instruction(),
@@ -426,7 +432,7 @@ func (r *EtcdSnapshotReconciler) startRKE2OnAllMachines(ctx context.Context, sco
 
 		// Check if appliedPlan is equal to the kill all instruction, if not requeue and wait until it is applied.
 		// TODO: Handle plan failure.
-		if !bytes.Equal(planSecret.Data["appliedPlan"], startRKE2Instructions) {
+		if !isPlanApplied(startRKE2Instructions, planSecret.Data["applied-checksum"]) {
 			log.Info("Plan not applied yet", "machine", machine.Name)
 			allMachinesReady = false
 			continue
@@ -503,4 +509,13 @@ func decompressPlanOutput(secret *corev1.Secret) (map[string][]byte, error) {
 	}
 
 	return outputMap, nil
+}
+
+func getInternalMachineIP(machine *clusterv1.Machine) string {
+	for _, address := range machine.Status.Addresses {
+		if address.Type == clusterv1.MachineInternalIP {
+			return address.Address
+		}
+	}
+	return ""
 }

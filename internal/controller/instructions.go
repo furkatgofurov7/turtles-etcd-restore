@@ -61,6 +61,30 @@ func manifestRemovalInstruction() OneTimeInstruction {
 	}
 }
 
+func removeServerUrlFromConfig() OneTimeInstruction {
+	return OneTimeInstruction{
+		Name:    "remove-server-manifests",
+		Command: "/bin/sh",
+		Args: []string{
+			"-c",
+			"sed -i '/^server:/d' /etc/rancher/rke2/config.yaml",
+		},
+		SaveOutput: true,
+	}
+}
+
+func addServerUrlToConfig(serverIP string) OneTimeInstruction {
+	return OneTimeInstruction{
+		Name:    "add-server-url-to-config",
+		Command: "/bin/sh",
+		Args: []string{
+			"-c",
+			fmt.Sprintf("echo 'server: https://%s:9345' >> /etc/rancher/rke2/config.yaml", serverIP),
+		},
+		SaveOutput: true,
+	}
+}
+
 func removeEtcdDataInstruction() OneTimeInstruction {
 	return OneTimeInstruction{
 		Name:    "remove-etcd-db-dir",
