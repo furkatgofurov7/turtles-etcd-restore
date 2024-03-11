@@ -63,11 +63,11 @@ func (r *EtcdMachineBackupReconciler) Reconcile(ctx context.Context, req ctrl.Re
 	return r.reconcileNormal(ctx, etcdMachineBackup)
 }
 
-func (r *EtcdMachineBackupReconciler) reconcileNormal(ctx context.Context, etcdMachineBackup *etcdv1alpha1.EtcdMachineBackup) (_ ctrl.Result, err error) {
+func (r *EtcdMachineBackupReconciler) reconcileNormal(_ context.Context, _ *etcdv1alpha1.EtcdMachineBackup) (_ ctrl.Result, err error) {
 	return ctrl.Result{}, nil
 }
 
-func (r *EtcdMachineBackupReconciler) reconcileDelete(ctx context.Context, etcdMachineBackup *etcdv1alpha1.EtcdMachineBackup) (ctrl.Result, error) {
+func (r *EtcdMachineBackupReconciler) reconcileDelete(_ context.Context, _ *etcdv1alpha1.EtcdMachineBackup) (ctrl.Result, error) {
 
 	return ctrl.Result{}, nil
 }

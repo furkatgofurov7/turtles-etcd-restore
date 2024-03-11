@@ -53,16 +53,18 @@ type ETCDSnapshotRestore struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 	Spec              ETCDSnapshotSpec   `json:"spec,omitempty"`
-	Status            ETCDSnapshotStatus `json:"status"`
+	Status            ETCDSnapshotStatus `json:"status,omitempty"`
 }
 
 // ETCDSnapshotSpec defines the desired state of ETCDSnapshot
 type ETCDSnapshotSpec struct {
-	ClusterName string `json:"clusterName,omitempty"`
+	ClusterName           string `json:"clusterName,omitempty"`
+	EtcdMachineBackupName string `json:"etcdMachineBackupName,omitempty"`
 }
 
 // ETCDSnapshotStatus defines the observed state of ETCDSnapshot
 type ETCDSnapshotStatus struct {
+	Phase      ETCDSnapshotPhase    `json:"phase,omitempty"`
 	Conditions clusterv1.Conditions `json:"conditions,omitempty"`
 }
 

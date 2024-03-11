@@ -6,15 +6,41 @@ var installsh = `
 set -x
 CURL_LOG="-v"
 
+# Function to download the system agent binary with retries
+download_agent_binary() {
+    RETRY_COUNT=10
+    DOWNLOAD_SUCCESS=false
+
+    while [ $RETRY_COUNT -gt 0 ] && [ "$DOWNLOAD_SUCCESS" = false ]; do
+        echo "Download attempt $((4 - $RETRY_COUNT)): Rancher System Agent binary"
+        curl --connect-timeout 60 --max-time 300 --write-out "%{http_code}\n" ${CURL_CAFLAG} -v -fL "${CATTLE_SERVER}/assets/rancher-system-agent-amd64" -o "${CATTLE_AGENT_BIN_PREFIX}/bin/rancher-system-agent"
+
+        if [ $? -eq 0 ] && [ -s "${CATTLE_AGENT_BIN_PREFIX}/bin/rancher-system-agent" ]; then
+            DOWNLOAD_SUCCESS=true
+            echo "Rancher System Agent binary downloaded successfully."
+        else
+            echo "Failed to download Rancher System Agent binary. Retrying..."
+            RETRY_COUNT=$((RETRY_COUNT - 1))
+            sleep 10
+        fi
+    done
+
+    if [ "$DOWNLOAD_SUCCESS" = false ]; then
+        echo "Failed to download Rancher System Agent binary after multiple attempts. Exiting."
+        exit 1
+    fi
+}
+
 echo "Downloading cert"
 CACERT=$(mktemp)
 curl --connect-timeout 60 --max-time 60 --write-out "%{http_code}\n" --insecure ${CURL_LOG} -fL "${CATTLE_SERVER}/cacerts" -o ${CACERT}
 
-echo "Download system agent binary"
+# Set up CURL_CAFLAG
 CURL_CAFLAG="--cacert ${CACERT}"
-CATTLE_AGENT_BIN_PREFIX="/usr/local"
-mkdir -p ${CATTLE_AGENT_BIN_PREFIX}/bin
-curl --connect-timeout 60 --max-time 300 --write-out "%{http_code}\n" ${CURL_CAFLAG} -v -fL "${CATTLE_SERVER}/assets/rancher-system-agent-amd64" -o "${CATTLE_AGENT_BIN_PREFIX}/bin/rancher-system-agent"
+
+# Call the function to download the system agent binary
+download_agent_binary
+
 chmod +x "${CATTLE_AGENT_BIN_PREFIX}/bin/rancher-system-agent"
 
 echo "systemd: Creating service file"

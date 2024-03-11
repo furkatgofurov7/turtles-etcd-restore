@@ -41,6 +41,8 @@ spec:
             properties:
               clusterName:
                 type: string
+              etcdMachineBackupName:
+                type: string
             type: object
           status:
             description: ETCDSnapshotStatus defines the observed state of ETCDSnapshot
@@ -91,9 +93,11 @@ spec:
                   - type
                   type: object
                 type: array
+              phase:
+                description: ETCDSnapshotPhase is a string representation of the phase
+                  of the etcd snapshot
+                type: string
             type: object
-        required:
-        - status
         type: object
     served: true
     storage: true
