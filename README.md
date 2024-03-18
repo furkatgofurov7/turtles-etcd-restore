@@ -2,7 +2,7 @@
 
 ## Setting up the environment
 
-To set up the environment, navigate to the root of the repository and run:
+To set up the environment, first prepare your EC2 SSH Key Pair name, navigate to the root of the repository and run:
 
 ```bash
     make dev-env SSH_KEY="yourkeyname"
