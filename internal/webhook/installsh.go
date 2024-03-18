@@ -31,9 +31,34 @@ download_agent_binary() {
     fi
 }
 
-echo "Downloading cert"
+download_certificates() {
+    RETRY_COUNT=10
+    DOWNLOAD_SUCCESS=false
+    CERT_FILE="$1"
+
+    while [ $RETRY_COUNT -gt 0 ] && [ "$DOWNLOAD_SUCCESS" = false ]; do
+        echo "Download attempt $((4 - $RETRY_COUNT)): Certificates"
+        curl --connect-timeout 60 --max-time 60 --write-out "%{http_code}\n" --insecure ${CURL_LOG} -fL "${CATTLE_SERVER}/cacerts" -o "${CERT_FILE}"
+
+        if [ $? -eq 0 ] && [ -s "${CERT_FILE}" ]; then
+            DOWNLOAD_SUCCESS=true
+            echo "Certificates downloaded successfully."
+        else
+            echo "Failed to download certificates. Retrying..."
+            RETRY_COUNT=$((RETRY_COUNT - 1))
+            sleep 10
+        fi
+    done
+
+    if [ "$DOWNLOAD_SUCCESS" = false ]; then
+        echo "Failed to download certificates after multiple attempts. Exiting."
+        exit 1
+    fi
+}
+
+echo "Downloading certificates"
 CACERT=$(mktemp)
-curl --connect-timeout 60 --max-time 60 --write-out "%{http_code}\n" --insecure ${CURL_LOG} -fL "${CATTLE_SERVER}/cacerts" -o ${CACERT}
+download_certificates "${CACERT}"
 
 # Set up CURL_CAFLAG
 CURL_CAFLAG="--cacert ${CACERT}"
