@@ -35,14 +35,6 @@ opening 2 separate new terminals:
 
 Follow the auto-generated link from second terminal to access the UI.
 
-## Cleanup
-
-To clean up the environment, run the following command from the root of the repo:
-
-```bash
-    make clean-dev-env
-```
-
 ## Performing the backup and restore
 
 When all machine in the cluster are ready, ETCDMachineBackup object should appear on the management cluster soon.
@@ -58,4 +50,12 @@ To perform a restore run the following command:
     CLUSTER_NAME=your-cluster-name
     ETCD_MACHINE_BACKUP_NAME=your-etcd-machine-backup-name
     kubectl apply -f examples/etcd-restore.yaml
+```
+
+## Cleanup
+
+To clean up the environment, run the following command from the root of the repo:
+
+```bash
+    make clean-dev-env
 ```
