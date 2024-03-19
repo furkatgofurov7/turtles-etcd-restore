@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/onsi/ginkgo/v2 v2.15.0
 	github.com/onsi/gomega v1.31.1
-	github.com/rancher-sandbox/cluster-api-provider-rke2 v0.2.6
+	github.com/rancher-sandbox/cluster-api-provider-rke2 v0.2.7
 	github.com/spf13/pflag v1.0.6-0.20210604193023-d5e0c0615ace
 	k8s.io/api v0.29.0
 	k8s.io/apimachinery v0.29.0
